@@ -494,48 +494,20 @@
   .history-net.positive { color: var(--sage-deep); }
   .history-net.negative { color: var(--terracotta-deep); }
 
-  /* Monthly Stats */
-  .monthly-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 12px;
-    margin: 22px 0;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--line);
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--coffee);
+    font-size: 14px;
   }
-  @media (max-width: 540px) { .monthly-stats { grid-template-columns: 1fr; } }
-
-  .monthly-stat {
-    padding: 16px;
-    background: var(--cream);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    border-left: 4px solid var(--sage);
-  }
-  .monthly-stat:nth-child(2) { border-left-color: var(--terracotta); }
-  .monthly-stat:nth-child(3) { border-left-color: var(--espresso); }
-
-  /* Chart */
-  .chart-section {
-    margin-top: 24px;
-  }
-  .chart-label {
-    font-size: 11px; text-transform: uppercase;
-    letter-spacing: 2.5px; color: var(--coffee);
-    font-weight: 600; margin-bottom: 14px;
-    display: block;
-  }
-  #weeklyChart {
-    width: 100%;
-    height: 280px;
-  }
-  .chart-wrapper {
-    background: var(--cream);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px;
+  .empty-state-icon {
+    font-size: 36px; margin-bottom: 8px;
+    font-family: 'Fraunces', serif;
+    color: var(--terracotta);
+    opacity: 0.6;
   }
 
+  /* Modal */
   .modal-overlay {
     position: fixed; inset: 0;
     background: rgba(42, 31, 23, 0.55);
@@ -676,50 +648,24 @@
     </div>
 
     <button class="save-btn" id="saveBtn">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17,21 17,13 7,13 7,21"></polyline><polyline points="7,3 7,8 15,8"></polyline></svg>
       <span id="saveBtnText">Save Today's Entry</span>
     </button>
   </div>
 
-  <!-- Monthly Summary -->
+  <!-- History -->
   <div class="card">
     <div class="history-header">
       <div>
-        <h2 class="card-title" id="monthlyTitle">April Sales & Expenses</h2>
-        <p class="card-subtitle">Current month overview</p>
+        <h2 class="card-title">History</h2>
+        <p class="card-subtitle">Tap any day to see details</p>
       </div>
       <button id="exportBtn" class="export-btn" title="Download all entries as CSV">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Export CSV
       </button>
     </div>
-    
-    <div class="monthly-stats">
-      <div class="monthly-stat">
-        <div class="stat-label">Total Sales</div>
-        <div class="stat-value"><span class="currency">₹</span><span id="monthlySales">0</span></div>
-        <div class="stat-meta" id="monthlySalesDays">0 days recorded</div>
-      </div>
-      <div class="monthly-stat">
-        <div class="stat-label">Total Expenses</div>
-        <div class="stat-value"><span class="currency">₹</span><span id="monthlyExpenses">0</span></div>
-        <div class="stat-meta" id="monthlyExpenseBreak">—</div>
-      </div>
-      <div class="monthly-stat">
-        <div class="stat-label">Net Profit</div>
-        <div class="stat-value"><span class="currency">₹</span><span id="monthlyNet">0</span></div>
-        <div class="stat-meta" id="monthlyDays">0 working days</div>
-      </div>
-    </div>
-
     <div id="historyList" class="history-list"></div>
-    
-    <div class="chart-section" id="chartSection" style="display: none;">
-      <span class="chart-label">Weekly Sales Trend</span>
-      <div class="chart-wrapper">
-        <svg id="weeklyChart" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg"></svg>
-      </div>
-    </div>
   </div>
 
   <div class="footer">VS Eateries</div>
@@ -728,36 +674,6 @@
 <div class="toast" id="toast">Saved</div>
 
 <script>
-  // Storage abstraction using LocalStorage
-  window.storage = {
-    async set(key, value) {
-      try {
-        localStorage.setItem(key, value);
-        return { success: true };
-      } catch (err) {
-        console.error('Storage set error:', err);
-        return null;
-      }
-    },
-    async get(key) {
-      try {
-        const value = localStorage.getItem(key);
-        return value ? { value } : null;
-      } catch (err) {
-        console.error('Storage get error:', err);
-        return null;
-      }
-    },
-    async getAllKeys() {
-      try {
-        return Object.keys(localStorage).filter(k => k.startsWith('vs_entry_'));
-      } catch (err) {
-        console.error('Storage getAllKeys error:', err);
-        return [];
-      }
-    }
-  };
-
   const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -783,20 +699,11 @@
     exportBtn: document.getElementById('exportBtn'),
     extrasList: document.getElementById('extrasList'),
     addExtraBtn: document.getElementById('addExtraBtn'),
-    chartSection: document.getElementById('chartSection'),
-    weeklyChart: document.getElementById('weeklyChart'),
-    monthlyTitle: document.getElementById('monthlyTitle'),
-    monthlySales: document.getElementById('monthlySales'),
-    monthlyExpenses: document.getElementById('monthlyExpenses'),
-    monthlyNet: document.getElementById('monthlyNet'),
-    monthlySalesDays: document.getElementById('monthlySalesDays'),
-    monthlyExpenseBreak: document.getElementById('monthlyExpenseBreak'),
-    monthlyDays: document.getElementById('monthlyDays'),
     toast: document.getElementById('toast'),
   };
 
   const today = new Date();
-  const todayKey = 'vs_eateries_' + formatDateKey(today);
+  const todayKey = formatDateKey(today);
 
   function formatDateKey(d) {
     const y = d.getFullYear();
@@ -909,7 +816,7 @@
     };
 
     try {
-      const result = await window.storage.set(`vs_entry_${todayKey}`, JSON.stringify(data));
+      const result = await window.storage.set(`entry:${todayKey}`, JSON.stringify(data));
       if (!result) throw new Error('Save returned null');
       showToast('✓ Saved successfully');
       els.saveBtn.classList.add('saved');
@@ -927,7 +834,7 @@
 
   async function loadEntry(dateKey) {
     try {
-      const result = await window.storage.get(`vs_entry_${dateKey}`);
+      const result = await window.storage.get(`entry:${dateKey}`);
       if (result && result.value) return JSON.parse(result.value);
     } catch (err) {
       // missing key or other error — return null
@@ -952,203 +859,163 @@
     recompute();
   }
 
-  function drawWeeklyChart(entries) {
-    const svg = els.weeklyChart;
-    svg.innerHTML = '';
-    
-    // Get last 7 days of data
-    const sortedKeys = Object.keys(entries).sort().slice(-7);
-    if (sortedKeys.length < 2) {
-      els.chartSection.style.display = 'none';
+  async function loadHistory() {
+    let keys = [];
+    try {
+      const result = await window.storage.list('entry:');
+      if (result && result.keys) keys = result.keys;
+    } catch (err) {
+      console.error('List failed:', err);
+    }
+
+    keys.sort().reverse();
+
+    els.exportBtn.disabled = keys.length === 0;
+
+    if (keys.length === 0) {
+      els.historyList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">◌</div>No entries yet.<br>Today\'s entry will appear here once saved.</div>';
       return;
     }
 
-    const data = sortedKeys.map(k => {
-      const [y, m, d] = k.split('-').map(Number);
-      const entry = entries[k];
-      const sales = (entry.gpay || 0) + (entry.cash || 0);
-      return { date: new Date(y, m - 1, d), sales, day: d, month: m - 1 };
+    const items = await Promise.all(keys.map(async k => {
+      const dateKey = k.replace('entry:', '');
+      const data = await loadEntry(dateKey);
+      return { dateKey, data };
+    }));
+
+    els.historyList.innerHTML = items
+      .filter(i => i.data)
+      .map(({ dateKey, data }) => {
+        const [y, m, d] = dateKey.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const sales = (data.gpay || 0) + (data.cash || 0);
+        const extrasSum = Array.isArray(data.extras) ? data.extras.reduce((s, e) => s + (e.amount || 0), 0) : 0;
+        const expenses = (data.expenses || 0) + (data.attendance ? WAGE : 0) + extrasSum;
+        const net = sales - expenses;
+        const isToday = dateKey === todayKey;
+
+        return `
+          <div class="history-item ${isToday ? 'is-today' : ''}" data-date="${dateKey}">
+            <div class="history-date">
+              <div class="day">${d}</div>
+              <div class="month">${MONTHS_SHORT[m - 1]}</div>
+            </div>
+            <div class="history-info">
+              <div class="day-label">${DAYS[dateObj.getDay()]}${isToday ? ' · Today' : ''}</div>
+              <div class="day-meta">
+                <span>↑ ₹${fmtMoney(sales)}</span>
+                <span>↓ ₹${fmtMoney(expenses)}</span>
+                <span>${data.attendance ? '✓ Present' : '○ Absent'}</span>
+              </div>
+            </div>
+            <div class="history-net ${net >= 0 ? 'positive' : 'negative'}">
+              ${net < 0 ? '−' : ''}₹${fmtMoney(Math.abs(net))}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    els.historyList.querySelectorAll('.history-item').forEach(item => {
+      item.addEventListener('click', async () => {
+        const dateKey = item.getAttribute('data-date');
+        const data = await loadEntry(dateKey);
+        if (!data) return;
+        showHistoryDetail(dateKey, data);
+      });
     });
-
-    // SVG dimensions
-    const width = 800, height = 300, padding = 40;
-    const chartW = width - 2 * padding;
-    const chartH = height - 2 * padding;
-
-    // Scale
-    const maxSales = Math.max(...data.map(d => d.sales), 1000);
-    const minSales = 0;
-    const scale = (val) => ((val - minSales) / (maxSales - minSales)) * chartH;
-    
-    // Grid lines and labels
-    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    gridGroup.setAttribute('stroke', 'var(--line)');
-    
-    // Horizontal grid
-    for (let i = 0; i <= 5; i++) {
-      const y = padding + (chartH / 5) * i;
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', padding);
-      line.setAttribute('y1', y);
-      line.setAttribute('x2', width - padding);
-      line.setAttribute('y2', y);
-      line.setAttribute('stroke', '#E8DFC9');
-      line.setAttribute('stroke-dasharray', '2,2');
-      gridGroup.appendChild(line);
-
-      // Y-axis labels
-      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      label.setAttribute('x', padding - 10);
-      label.setAttribute('y', y + 4);
-      label.setAttribute('text-anchor', 'end');
-      label.setAttribute('font-size', '11');
-      label.setAttribute('fill', '#6B5544');
-      label.setAttribute('font-family', 'Fraunces, serif');
-      label.setAttribute('font-weight', '500');
-      label.textContent = '₹' + fmtMoney((maxSales / 5) * (5 - i));
-      gridGroup.appendChild(label);
-    }
-    svg.appendChild(gridGroup);
-
-    // Points and line
-    const points = data.map((d, i) => {
-      const x = padding + (i / (data.length - 1)) * chartW;
-      const y = height - padding - scale(d.sales);
-      return { x, y, ...d };
-    });
-
-    // Line
-    const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    line.setAttribute('d', pathData);
-    line.setAttribute('stroke', '#5A7A4F');
-    line.setAttribute('stroke-width', '3');
-    line.setAttribute('fill', 'none');
-    line.setAttribute('stroke-linecap', 'round');
-    line.setAttribute('stroke-linejoin', 'round');
-    svg.appendChild(line);
-
-    // Points (circles)
-    points.forEach((p, i) => {
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', p.x);
-      circle.setAttribute('cy', p.y);
-      circle.setAttribute('r', '5');
-      circle.setAttribute('fill', '#5A7A4F');
-      svg.appendChild(circle);
-
-      // Date label
-      const textLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      textLabel.setAttribute('x', p.x);
-      textLabel.setAttribute('y', height - 10);
-      textLabel.setAttribute('text-anchor', 'middle');
-      textLabel.setAttribute('font-size', '11');
-      textLabel.setAttribute('fill', '#6B5544');
-      textLabel.setAttribute('font-family', 'Fraunces, serif');
-      textLabel.textContent = p.day;
-      svg.appendChild(textLabel);
-    });
-
-    els.chartSection.style.display = 'block';
   }
 
-  async function loadHistory() {
-    const keys = await window.storage.getAllKeys();
-    const entries = {};
-    
-    for (const key of keys) {
-      const dateStr = key.replace('vs_entry_', '');
-      const data = await loadEntry(dateStr);
-      if (data) {
-        entries[dateStr] = data;
-      }
-    }
+  function showHistoryDetail(dateKey, data) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    const dateStr = `${DAYS[dateObj.getDay()]}, ${d} ${MONTHS[m - 1]} ${y}`;
+    const isToday = dateKey === todayKey;
 
-    const sortedKeys = Object.keys(entries).sort().reverse();
-    els.historyList.innerHTML = '';
+    const sales = (data.gpay || 0) + (data.cash || 0);
+    const extrasArr = Array.isArray(data.extras) ? data.extras : [];
+    const extrasSum = extrasArr.reduce((s, e) => s + (e.amount || 0), 0);
+    const expenses = (data.expenses || 0) + (data.attendance ? WAGE : 0) + extrasSum;
+    const net = sales - expenses;
 
-    let monthlySales = 0, monthlyExpenses = 0, workingDays = 0;
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
+    const extrasHtml = extrasArr.length
+      ? `<div style="margin-top:4px;padding:12px 14px;background:var(--cream);border-radius:10px;">
+           <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--coffee);font-weight:600;margin-bottom:8px;">Other Expenses</div>
+           ${extrasArr.map(e => `
+             <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:14px;">
+               <span style="color:var(--espresso);">${escapeHtml(e.category || 'Uncategorized')}</span>
+               <strong>₹${fmtMoney(e.amount || 0)}</strong>
+             </div>
+           `).join('')}
+         </div>`
+      : '';
 
-    sortedKeys.forEach(dateStr => {
-      const [y, m, d] = dateStr.split('-').map(Number);
-      const entry = entries[dateStr];
-      const sales = (entry.gpay || 0) + (entry.cash || 0);
-      const expCash = entry.expenses || 0;
-      const wage = entry.attendance ? WAGE : 0;
-      const extras = (entry.extras || []).reduce((sum, e) => sum + (e.amount || 0), 0);
-      const totalExp = expCash + wage + extras;
-      const net = sales - totalExp;
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div style="font-family:'Fraunces',serif;font-weight:600;font-size:24px;margin-bottom:4px;">${dateStr}</div>
+        <div style="font-size:11px;color:var(--coffee);margin-bottom:20px;text-transform:uppercase;letter-spacing:2px;">${isToday ? 'Today' : 'Past entry'}</div>
 
-      if (y === currentYear && m === currentMonth + 1) {
-        monthlySales += sales;
-        monthlyExpenses += totalExp;
-        workingDays++;
-      }
-
-      const histDate = new Date(y, m - 1, d);
-      const isToday = histDate.toDateString() === today.toDateString();
-
-      const item = document.createElement('div');
-      item.className = `history-item${isToday ? ' is-today' : ''}`;
-      item.innerHTML = `
-        <div class="history-date">
-          <div class="day">${d}</div>
-          <div class="month">${MONTHS_SHORT[m - 1]}</div>
+        <div style="display:grid;gap:8px;margin-bottom:18px;">
+          <div class="modal-row"><span>Google Pay</span><strong>₹${fmtMoney(data.gpay || 0)}</strong></div>
+          <div class="modal-row"><span>Cash sales</span><strong>₹${fmtMoney(data.cash || 0)}</strong></div>
+          <div class="modal-row"><span>Cash expenses</span><strong>₹${fmtMoney(data.expenses || 0)}</strong></div>
+          <div class="modal-row"><span>Attendance</span><strong>${data.attendance ? 'Present (+₹500)' : 'Absent'}</strong></div>
+          ${extrasHtml}
         </div>
-        <div class="history-info">
-          <div class="day-label">${DAYS[histDate.getDay()]}</div>
-          <div class="day-meta">
-            <span>₹${fmtMoney(sales)} sales</span>
-            <span>₹${fmtMoney(totalExp)} exp</span>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px;">
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--sage);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Sales</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;">₹${fmtMoney(sales)}</div>
+          </div>
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--terracotta);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Expenses</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;">₹${fmtMoney(expenses)}</div>
+          </div>
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--espresso);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Net</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:${net >= 0 ? 'var(--sage-deep)' : 'var(--terracotta-deep)'};">${net < 0 ? '−' : ''}₹${fmtMoney(Math.abs(net))}</div>
           </div>
         </div>
-        <div class="history-net ${net >= 0 ? 'positive' : 'negative'}">
-          ${net < 0 ? '−' : ''}₹${fmtMoney(Math.abs(net))}
+
+        <div style="display:flex;gap:10px;">
+          <button id="closeModal" style="flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--line);background:var(--paper);font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;color:var(--espresso);">Close</button>
+          <button id="deleteEntry" style="flex:1;padding:13px;border-radius:11px;border:none;background:var(--terracotta);color:var(--paper);font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;">Delete</button>
         </div>
-      `;
-      els.historyList.appendChild(item);
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.remove();
     });
-
-    els.monthlySales.textContent = fmtMoney(monthlySales);
-    els.monthlyExpenses.textContent = fmtMoney(monthlyExpenses);
-    els.monthlyNet.textContent = fmtMoney(monthlySales - monthlyExpenses);
-    els.monthlySalesDays.textContent = `${sortedKeys.filter(k => {
-      const [y, m] = k.split('-').map(Number);
-      return y === currentYear && m === currentMonth + 1;
-    }).length} days recorded`;
-    els.monthlyDays.textContent = `${workingDays} working days`;
-    els.monthlyExpenseBreak.textContent = workingDays > 0 ? `₹${fmtMoney(monthlyExpenses / workingDays)}/day avg` : '—';
-
-    drawWeeklyChart(entries);
+    overlay.querySelector('#closeModal').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#deleteEntry').addEventListener('click', async () => {
+      if (!confirm(`Delete entry for ${dateStr}?`)) return;
+      try {
+        await window.storage.delete(`entry:${dateKey}`);
+        overlay.remove();
+        showToast('Entry deleted');
+        if (isToday) {
+          els.gpay.value = '';
+          els.cash.value = '';
+          els.expenses.value = '';
+          els.attendance.checked = false;
+          els.attendanceRow.classList.remove('checked');
+          clearExtras();
+          els.saveBtnText.textContent = 'Save Today\'s Entry';
+          recompute();
+        }
+        await loadHistory();
+      } catch (err) {
+        console.error(err);
+        showToast('Could not delete');
+      }
+    });
   }
 
-  function exportToCSV() {
-    const csvContent = [];
-    csvContent.push(['Date', 'Day', 'Google Pay', 'Cash', 'Total Sales', 'Expenses', 'Wages', 'Other Expenses', 'Total Expenses', 'Net']);
-    
-    const historyItems = els.historyList.querySelectorAll('.history-item');
-    historyItems.forEach(item => {
-      const dateDiv = item.querySelector('.history-date');
-      const day = dateDiv.querySelector('.day').textContent;
-      const month = dateDiv.querySelector('.month').textContent;
-      const dayLabel = item.querySelector('.day-label').textContent;
-      // Extract values from meta
-      const metaText = item.querySelector('.day-meta').textContent;
-      csvContent.push([`${day}-${month}`, dayLabel, '', '', '', '', '', '', '', '']);
-    });
-
-    const csv = csvContent.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `vs-eateries-${formatDateKey(today)}.csv`);
-    link.click();
-  }
-
-  // Event listeners
+  // Wire events
   els.gpay.addEventListener('input', recompute);
   els.cash.addEventListener('input', recompute);
   els.expenses.addEventListener('input', recompute);
@@ -1156,14 +1023,119 @@
     els.attendanceRow.classList.toggle('checked', els.attendance.checked);
     recompute();
   });
-  els.attendanceRow.addEventListener('click', () => {
-    els.attendance.click();
-  });
-  els.addExtraBtn.addEventListener('click', () => addExtraRow());
   els.saveBtn.addEventListener('click', saveEntry);
-  els.exportBtn.addEventListener('click', exportToCSV);
+  els.exportBtn.addEventListener('click', exportCSV);
+  els.addExtraBtn.addEventListener('click', () => {
+    const row = addExtraRow();
+    row.querySelector('.extra-cat').focus();
+  });
 
-  // Initialize
+  async function exportCSV() {
+    let keys = [];
+    try {
+      const result = await window.storage.list('entry:');
+      if (result && result.keys) keys = result.keys;
+    } catch (err) {
+      console.error('List failed:', err);
+    }
+
+    if (keys.length === 0) {
+      showToast('No entries to export');
+      return;
+    }
+
+    keys.sort();
+
+    const items = await Promise.all(keys.map(async k => {
+      const dateKey = k.replace('entry:', '');
+      const data = await loadEntry(dateKey);
+      return { dateKey, data };
+    }));
+
+    const headers = [
+      'Date', 'Day', 'Google Pay', 'Cash Sales', 'Total Sales',
+      'Cash Expenses', 'Other Expenses', 'Other Details',
+      'Attendance', 'Wages', 'Total Expenses', 'Net'
+    ];
+
+    const escape = v => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+
+    const rows = items
+      .filter(i => i.data)
+      .map(({ dateKey, data }) => {
+        const [y, m, d] = dateKey.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const gpay = data.gpay || 0;
+        const cash = data.cash || 0;
+        const cashExp = data.expenses || 0;
+        const present = !!data.attendance;
+        const wages = present ? WAGE : 0;
+        const extrasArr = Array.isArray(data.extras) ? data.extras : [];
+        const extrasSum = extrasArr.reduce((s, e) => s + (e.amount || 0), 0);
+        const extrasDetail = extrasArr
+          .filter(e => e.category || e.amount > 0)
+          .map(e => `${e.category || 'Uncategorized'}: ${e.amount || 0}`)
+          .join('; ');
+        const sales = gpay + cash;
+        const totalExp = cashExp + wages + extrasSum;
+        const net = sales - totalExp;
+
+        return [
+          dateKey,
+          DAYS[dateObj.getDay()],
+          gpay, cash, sales,
+          cashExp, extrasSum, extrasDetail,
+          present ? 'Present' : 'Absent',
+          wages, totalExp, net
+        ].map(escape).join(',');
+      });
+
+    // Totals row
+    const totals = items.reduce((acc, { data }) => {
+      if (!data) return acc;
+      const gpay = data.gpay || 0;
+      const cash = data.cash || 0;
+      const cashExp = data.expenses || 0;
+      const wages = data.attendance ? WAGE : 0;
+      const extrasSum = Array.isArray(data.extras) ? data.extras.reduce((s, e) => s + (e.amount || 0), 0) : 0;
+      acc.gpay += gpay;
+      acc.cash += cash;
+      acc.sales += gpay + cash;
+      acc.cashExp += cashExp;
+      acc.extras += extrasSum;
+      acc.wages += wages;
+      acc.totalExp += cashExp + wages + extrasSum;
+      acc.net += (gpay + cash) - (cashExp + wages + extrasSum);
+      acc.presentDays += data.attendance ? 1 : 0;
+      return acc;
+    }, { gpay: 0, cash: 0, sales: 0, cashExp: 0, extras: 0, wages: 0, totalExp: 0, net: 0, presentDays: 0 });
+
+    const totalsRow = [
+      'TOTAL', '', totals.gpay, totals.cash, totals.sales,
+      totals.cashExp, totals.extras, '',
+      `${totals.presentDays} days`, totals.wages, totals.totalExp, totals.net
+    ].map(escape).join(',');
+
+    const csv = [headers.join(','), ...rows, '', totalsRow].join('\n');
+    // BOM for Excel UTF-8 compatibility
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const filename = `vs-eateries-${todayKey}.csv`;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    showToast(`✓ Exported ${rows.length} entries`);
+  }
+
+  // Init
   setupDate();
   loadTodayIfAny();
   loadHistory();
