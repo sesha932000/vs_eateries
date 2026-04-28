@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VS Eateries — Daily Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF5E9;
+    --paper: #FFFCF4;
+    --espresso: #2A1F17;
+    --coffee: #6B5544;
+    --terracotta: #B5562A;
+    --terracotta-deep: #8E3F1B;
+    --sage: #5A7A4F;
+    --sage-deep: #3D5A33;
+    --line: #E8DFC9;
+    --shadow: rgba(67, 41, 17, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 15% 5%, rgba(181, 86, 42, 0.05) 0%, transparent 45%),
+      radial-gradient(circle at 85% 95%, rgba(90, 122, 79, 0.05) 0%, transparent 45%);
+    color: var(--espresso);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    line-height: 1.55;
+    font-size: 16px;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; }
+
+  /* Brand */
+  .brand { text-align: center; margin-bottom: 28px; padding-top: 8px; }
+  .brand-mark { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .brand-icon {
+    width: 38px; height: 38px;
+    background: var(--terracotta);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--paper);
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 15px;
+    letter-spacing: -0.5px;
+  }
+  .brand-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 34px;
+    letter-spacing: -0.8px;
+  }
+  .ornament {
+    text-align: center; color: var(--terracotta);
+    font-family: 'Fraunces', serif;
+    font-size: 18px; margin: 4px 0 10px;
+    letter-spacing: 8px;
+  }
+  .brand-tagline {
+    font-size: 12px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--coffee);
+    font-weight: 600;
+  }
+
+  /* Date card */
+  .date-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+  .date-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 2.5px; color: var(--coffee);
+    margin-bottom: 6px; font-weight: 600;
+  }
+  .date-day {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 30px;
+    line-height: 1.1; letter-spacing: -0.5px;
+  }
+  .date-full { font-size: 15px; color: var(--coffee); margin-top: 4px; }
+  .date-icon {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--terracotta) 0%, var(--terracotta-deep) 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--paper);
+    font-family: 'Fraunces', serif;
+    font-weight: 700; font-size: 30px;
+    box-shadow: 0 4px 12px rgba(181, 86, 42, 0.25);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 20px var(--shadow);
+  }
+  .card-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 24px;
+    letter-spacing: -0.4px;
+  }
+  .card-subtitle { font-size: 14px; color: var(--coffee); margin-top: 2px; }
+
+  .section-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 2.5px; color: var(--coffee);
+    font-weight: 600; margin: 22px 0 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-label:first-child { margin-top: 18px; }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--line);
+  }
+
+  /* Inputs */
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 480px) { .input-grid { grid-template-columns: 1fr; } }
+
+  .input-group { display: flex; flex-direction: column; }
+  .input-label {
+    font-size: 14px; font-weight: 600;
+    margin-bottom: 7px; color: var(--espresso);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .input-label .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .input-wrap { position: relative; }
+  .input-prefix {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Fraunces', serif;
+    color: var(--coffee);
+    font-size: 18px; font-weight: 500;
+    pointer-events: none;
+  }
+  .input-field {
+    width: 100%;
+    padding: 14px 16px 14px 36px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    background: var(--cream);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 17px; font-weight: 500;
+    color: var(--espresso);
+    transition: all 0.15s ease;
+  }
+  .input-field:focus {
+    outline: none;
+    border-color: var(--terracotta);
+    background: var(--paper);
+    box-shadow: 0 0 0 3px rgba(181, 86, 42, 0.12);
+  }
+  .input-field::placeholder { color: #C8B89A; }
+  .input-field::-webkit-outer-spin-button,
+  .input-field::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .input-field { -moz-appearance: textfield; }
+
+  /* Extras */
+  .extras-section { margin-top: 14px; }
+  .extras-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .extras-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--espresso);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .extras-label::before {
+    content: '';
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--terracotta);
+    opacity: 0.6;
+  }
+  .extras-label em {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--coffee);
+    font-size: 12px;
+  }
+  .add-extra-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    background: transparent;
+    color: var(--terracotta);
+    border: 1.5px dashed rgba(181, 86, 42, 0.4);
+    border-radius: 9px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .add-extra-btn:hover {
+    background: rgba(181, 86, 42, 0.08);
+    border-style: solid;
+    border-color: var(--terracotta);
+  }
+  .extras-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .extra-row {
+    display: grid;
+    grid-template-columns: 1fr 130px auto;
+    gap: 8px;
+    align-items: center;
+  }
+  @media (max-width: 480px) {
+    .extra-row { grid-template-columns: 1fr 110px auto; }
+  }
+  .extra-cat, .extra-amt {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    background: var(--cream);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--espresso);
+    transition: all 0.15s ease;
+  }
+  .extra-amt { padding-left: 30px; }
+  .extra-cat:focus, .extra-amt:focus {
+    outline: none;
+    border-color: var(--terracotta);
+    background: var(--paper);
+    box-shadow: 0 0 0 3px rgba(181, 86, 42, 0.12);
+  }
+  .extra-amt-wrap { position: relative; }
+  .extra-amt-wrap .input-prefix {
+    left: 12px;
+    font-size: 15px;
+  }
+  .extra-remove {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: transparent;
+    border: 1.5px solid var(--line);
+    color: var(--coffee);
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+  .extra-remove:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+    background: rgba(181, 86, 42, 0.06);
+  }
+
+  /* Attendance */
+  .attendance-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 18px;
+    background: var(--cream);
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    margin-top: 12px;
+  }
+  .attendance-row:hover { border-color: var(--sage); }
+  .attendance-row.checked {
+    background: rgba(90, 122, 79, 0.10);
+    border-color: var(--sage);
+  }
+  .attendance-text strong {
+    font-weight: 600; font-size: 16px; display: block;
+  }
+  .attendance-text small {
+    font-size: 13px; color: var(--coffee);
+  }
+  .checkbox-visual {
+    width: 28px; height: 28px;
+    border: 2px solid var(--coffee);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease;
+    background: var(--paper);
+    flex-shrink: 0;
+  }
+  .attendance-row.checked .checkbox-visual {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+  .checkbox-visual svg {
+    width: 14px; height: 14px;
+    stroke: var(--paper);
+    stroke-width: 3.5;
+    fill: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .attendance-row.checked .checkbox-visual svg { opacity: 1; }
+  .hidden-checkbox { position: absolute; opacity: 0; pointer-events: none; }
+
+  /* Summary */
+  .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  @media (max-width: 540px) { .summary { grid-template-columns: 1fr; } }
+
+  .stat {
+    padding: 16px 16px 16px 18px;
+    border-radius: 14px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    position: relative; overflow: hidden;
+  }
+  .stat::before {
+    content: ''; position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+  }
+  .stat.sales::before { background: var(--sage); }
+  .stat.expenses::before { background: var(--terracotta); }
+  .stat.net::before { background: var(--espresso); }
+
+  .stat-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1.8px; color: var(--coffee);
+    font-weight: 600; margin-bottom: 6px;
+  }
+  .stat-value {
+    font-family: 'Fraunces', serif;
+    font-size: 28px; font-weight: 600;
+    letter-spacing: -0.5px; line-height: 1;
+  }
+  .stat-value .currency {
+    font-size: 18px; color: var(--coffee);
+    margin-right: 1px;
+  }
+  .stat-meta {
+    font-size: 12px; color: var(--coffee);
+    margin-top: 6px;
+  }
+  .stat.net.positive .stat-value,
+  .stat.net.positive .currency { color: var(--sage-deep); }
+  .stat.net.negative .stat-value,
+  .stat.net.negative .currency { color: var(--terracotta-deep); }
+
+  /* Save button */
+  .save-btn {
+    width: 100%;
+    padding: 17px;
+    background: var(--espresso);
+    color: var(--paper);
+    border: none;
+    border-radius: 14px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 16px; font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 22px;
+  }
+  .save-btn:hover { background: #1A130D; transform: translateY(-1px); }
+  .save-btn:active { transform: translateY(0); }
+  .save-btn.saved { background: var(--sage-deep); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(140%);
+    background: var(--espresso);
+    color: var(--paper);
+    padding: 13px 22px;
+    border-radius: 100px;
+    font-size: 14px; font-weight: 500;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+    z-index: 100;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* History */
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--paper);
+    color: var(--espresso);
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .export-btn:hover {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+    transform: translateY(-1px);
+  }
+  .export-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .history-list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+  .history-item {
+    padding: 14px 16px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px; align-items: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .history-item:hover { border-color: var(--terracotta); transform: translateX(2px); }
+  .history-item.is-today {
+    border-color: var(--terracotta);
+    background: rgba(181, 86, 42, 0.05);
+  }
+  .history-date {
+    width: 54px; height: 54px;
+    border-radius: 11px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .history-date .day {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 21px;
+  }
+  .history-date .month {
+    font-size: 10px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--coffee);
+    margin-top: 3px; font-weight: 600;
+  }
+  .history-info .day-label {
+    font-weight: 600; font-size: 15px; margin-bottom: 4px;
+  }
+  .history-info .day-meta {
+    font-size: 13px; color: var(--coffee);
+    display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .history-info .day-meta span {
+    display: inline-flex; align-items: center; gap: 3px;
+  }
+  .history-net {
+    font-family: 'Fraunces', serif;
+    font-size: 19px; font-weight: 600;
+    text-align: right; white-space: nowrap;
+  }
+  .history-net.positive { color: var(--sage-deep); }
+  .history-net.negative { color: var(--terracotta-deep); }
+
+  /* Monthly Stats */
+  .monthly-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 22px 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 540px) { .monthly-stats { grid-template-columns: 1fr; } }
+
+  .monthly-stat {
+    padding: 16px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    border-left: 4px solid var(--sage);
+  }
+  .monthly-stat:nth-child(2) { border-left-color: var(--terracotta); }
+  .monthly-stat:nth-child(3) { border-left-color: var(--espresso); }
+
+  /* Chart */
+  .chart-section {
+    margin-top: 24px;
+  }
+  .chart-label {
+    font-size: 11px; text-transform: uppercase;
+    letter-spacing: 2.5px; color: var(--coffee);
+    font-weight: 600; margin-bottom: 14px;
+    display: block;
+  }
+  #weeklyChart {
+    width: 100%;
+    height: 280px;
+  }
+  .chart-wrapper {
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px;
+  }
+
+  .empty-state {
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(42, 31, 23, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+  }
+  .modal {
+    background: var(--paper);
+    border-radius: 18px;
+    padding: 26px;
+    max-width: 440px; width: 100%;
+    border: 1px solid var(--line);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-row {
+    display: flex; justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--cream);
+    border-radius: 10px;
+  }
+  .modal-row span { color: var(--coffee); font-size: 15px; }
+  .modal-row strong { font-weight: 600; font-size: 15px; }
+
+  .footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 10px;
+    color: var(--coffee);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-mark">
+      <div class="brand-icon">VS</div>
+      <div class="brand-name">VS Eateries</div>
+    </div>
+    <div class="ornament">· · ·</div>
+    <div class="brand-tagline">Daily Ledger</div>
+  </div>
+
+  <!-- Date card -->
+  <div class="date-card">
+    <div>
+      <div class="date-label">Today</div>
+      <div class="date-day" id="dateDay">—</div>
+      <div class="date-full" id="dateFull">—</div>
+    </div>
+    <div class="date-icon" id="dateIcon">—</div>
+  </div>
+
+  <!-- Entry card -->
+  <div class="card">
+    <h2 class="card-title">Today's Entry</h2>
+    <p class="card-subtitle">Record sales, expenses & attendance</p>
+
+    <div class="section-label">Sales</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <label class="input-label" for="gpay">
+          <span class="dot" style="background: var(--sage)"></span>
+          Google Pay
+        </label>
+        <div class="input-wrap">
+          <span class="input-prefix">₹</span>
+          <input type="number" id="gpay" class="input-field" placeholder="0" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="cash">
+          <span class="dot" style="background: var(--sage)"></span>
+          Cash
+        </label>
+        <div class="input-wrap">
+          <span class="input-prefix">₹</span>
+          <input type="number" id="cash" class="input-field" placeholder="0" min="0" step="any" inputmode="decimal">
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Expenses</div>
+    <div class="input-group">
+      <label class="input-label" for="expenses">
+        <span class="dot" style="background: var(--terracotta)"></span>
+        Cash Expenses
+      </label>
+      <div class="input-wrap">
+        <span class="input-prefix">₹</span>
+        <input type="number" id="expenses" class="input-field" placeholder="0" min="0" step="any" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="extras-section">
+      <div class="extras-header">
+        <span class="extras-label">Other Expenses <em>(optional)</em></span>
+        <button type="button" id="addExtraBtn" class="add-extra-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add
+        </button>
+      </div>
+      <div id="extrasList" class="extras-list"></div>
+    </div>
+
+    <label class="attendance-row" id="attendanceRow">
+      <input type="checkbox" id="attendance" class="hidden-checkbox">
+      <div class="attendance-text">
+        <strong>Employee Present</strong>
+        <small>Adds ₹500 to today's expenses</small>
+      </div>
+      <div class="checkbox-visual">
+        <svg viewBox="0 0 24 24"><polyline points="4,12 10,18 20,6"></polyline></svg>
+      </div>
+    </label>
+
+    <div class="section-label">Day Summary</div>
+    <div class="summary">
+      <div class="stat sales">
+        <div class="stat-label">Total Sales</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="totalSales">0</span></div>
+      </div>
+      <div class="stat expenses">
+        <div class="stat-label">Total Expenses</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="totalExpenses">0</span></div>
+        <div class="stat-meta" id="expenseBreak">No expenses yet</div>
+      </div>
+      <div class="stat net" id="netStat">
+        <div class="stat-label">Net</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="netTotal">0</span></div>
+      </div>
+    </div>
+
+    <button class="save-btn" id="saveBtn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17,21 17,13 7,13 7,21"></polyline><polyline points="7,3 7,8 15,8"></polyline></svg>
+      <span id="saveBtnText">Save Today's Entry</span>
+    </button>
+  </div>
+
+  <!-- Monthly Summary -->
+  <div class="card">
+    <div class="history-header">
+      <div>
+        <h2 class="card-title" id="monthlyTitle">April Sales & Expenses</h2>
+        <p class="card-subtitle">Current month overview</p>
+      </div>
+      <button id="exportBtn" class="export-btn" title="Download all entries as CSV">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Export CSV
+      </button>
+    </div>
+    
+    <div class="monthly-stats">
+      <div class="monthly-stat">
+        <div class="stat-label">Total Sales</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="monthlySales">0</span></div>
+        <div class="stat-meta" id="monthlySalesDays">0 days recorded</div>
+      </div>
+      <div class="monthly-stat">
+        <div class="stat-label">Total Expenses</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="monthlyExpenses">0</span></div>
+        <div class="stat-meta" id="monthlyExpenseBreak">—</div>
+      </div>
+      <div class="monthly-stat">
+        <div class="stat-label">Net Profit</div>
+        <div class="stat-value"><span class="currency">₹</span><span id="monthlyNet">0</span></div>
+        <div class="stat-meta" id="monthlyDays">0 working days</div>
+      </div>
+    </div>
+
+    <div id="historyList" class="history-list"></div>
+    
+    <div class="chart-section" id="chartSection" style="display: none;">
+      <span class="chart-label">Weekly Sales Trend</span>
+      <div class="chart-wrapper">
+        <svg id="weeklyChart" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">VS Eateries</div>
+</div>
+
+<div class="toast" id="toast">Saved</div>
+
+<script>
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const WAGE = 500;
+
+  const els = {
+    dateDay: document.getElementById('dateDay'),
+    dateFull: document.getElementById('dateFull'),
+    dateIcon: document.getElementById('dateIcon'),
+    gpay: document.getElementById('gpay'),
+    cash: document.getElementById('cash'),
+    expenses: document.getElementById('expenses'),
+    attendance: document.getElementById('attendance'),
+    attendanceRow: document.getElementById('attendanceRow'),
+    totalSales: document.getElementById('totalSales'),
+    totalExpenses: document.getElementById('totalExpenses'),
+    expenseBreak: document.getElementById('expenseBreak'),
+    netTotal: document.getElementById('netTotal'),
+    netStat: document.getElementById('netStat'),
+    saveBtn: document.getElementById('saveBtn'),
+    saveBtnText: document.getElementById('saveBtnText'),
+    historyList: document.getElementById('historyList'),
+    exportBtn: document.getElementById('exportBtn'),
+    extrasList: document.getElementById('extrasList'),
+    addExtraBtn: document.getElementById('addExtraBtn'),
+    chartSection: document.getElementById('chartSection'),
+    weeklyChart: document.getElementById('weeklyChart'),
+    monthlyTitle: document.getElementById('monthlyTitle'),
+    monthlySales: document.getElementById('monthlySales'),
+    monthlyExpenses: document.getElementById('monthlyExpenses'),
+    monthlyNet: document.getElementById('monthlyNet'),
+    monthlySalesDays: document.getElementById('monthlySalesDays'),
+    monthlyExpenseBreak: document.getElementById('monthlyExpenseBreak'),
+    monthlyDays: document.getElementById('monthlyDays'),
+    historyList: document.getElementById('historyList'),
+    exportBtn: document.getElementById('exportBtn'),
+    toast: document.getElementById('toast'),
+  };
+
+  const today = new Date();
+  const todayKey = formatDateKey(today);
+
+  function formatDateKey(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function setupDate() {
+    els.dateDay.textContent = DAYS[today.getDay()];
+    els.dateFull.textContent = `${today.getDate()} ${MONTHS[today.getMonth()]} ${today.getFullYear()}`;
+    els.dateIcon.textContent = today.getDate();
+  }
+
+  function fmtMoney(n) {
+    return Math.round(n).toLocaleString('en-IN');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function getValue(el) {
+    const v = parseFloat(el.value);
+    return isNaN(v) || v < 0 ? 0 : v;
+  }
+
+  function addExtraRow(category = '', amount = '') {
+    const row = document.createElement('div');
+    row.className = 'extra-row';
+    row.innerHTML = `
+      <input type="text" class="extra-cat" placeholder="Category (e.g. Vegetables, Gas)" value="${String(category).replace(/"/g, '&quot;')}">
+      <div class="input-wrap extra-amt-wrap">
+        <span class="input-prefix">₹</span>
+        <input type="number" class="extra-amt" placeholder="0" min="0" step="any" inputmode="decimal" value="${amount || ''}">
+      </div>
+      <button type="button" class="extra-remove" aria-label="Remove">×</button>
+    `;
+    els.extrasList.appendChild(row);
+    const amtInput = row.querySelector('.extra-amt');
+    const catInput = row.querySelector('.extra-cat');
+    amtInput.addEventListener('input', recompute);
+    catInput.addEventListener('input', recompute);
+    row.querySelector('.extra-remove').addEventListener('click', () => {
+      row.remove();
+      recompute();
+    });
+    return row;
+  }
+
+  function getExtras() {
+    return Array.from(els.extrasList.querySelectorAll('.extra-row')).map(row => ({
+      category: row.querySelector('.extra-cat').value.trim(),
+      amount: parseFloat(row.querySelector('.extra-amt').value) || 0,
+    })).filter(e => e.category || e.amount > 0);
+  }
+
+  function clearExtras() {
+    els.extrasList.innerHTML = '';
+  }
+
+  function extrasTotal() {
+    return getExtras().reduce((sum, e) => sum + (e.amount || 0), 0);
+  }
+
+  function recompute() {
+    const gpay = getValue(els.gpay);
+    const cash = getValue(els.cash);
+    const expenses = getValue(els.expenses);
+    const attendance = els.attendance.checked;
+    const wage = attendance ? WAGE : 0;
+    const extras = extrasTotal();
+
+    const sales = gpay + cash;
+    const totalExp = expenses + wage + extras;
+    const net = sales - totalExp;
+
+    els.totalSales.textContent = fmtMoney(sales);
+    els.totalExpenses.textContent = fmtMoney(totalExp);
+    els.netTotal.textContent = fmtMoney(Math.abs(net));
+
+    const parts = [];
+    if (expenses > 0) parts.push(`₹${fmtMoney(expenses)} cash`);
+    if (extras > 0) parts.push(`₹${fmtMoney(extras)} other`);
+    if (attendance) parts.push(`₹${WAGE} wages`);
+    els.expenseBreak.textContent = parts.length ? parts.join(' + ') : 'No expenses yet';
+
+    els.netStat.classList.remove('positive', 'negative');
+    if (net > 0) els.netStat.classList.add('positive');
+    else if (net < 0) els.netStat.classList.add('negative');
+
+    const currencyEl = els.netStat.querySelector('.currency');
+    currencyEl.textContent = net < 0 ? '−₹' : '₹';
+  }
+
+  function showToast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    setTimeout(() => els.toast.classList.remove('show'), 2400);
+  }
+
+  async function saveEntry() {
+    const data = {
+      gpay: getValue(els.gpay),
+      cash: getValue(els.cash),
+      expenses: getValue(els.expenses),
+      extras: getExtras(),
+      attendance: els.attendance.checked,
+      savedAt: new Date().toISOString(),
+    };
+
+    try {
+      const result = await window.storage.set(`entry:${todayKey}`, JSON.stringify(data));
+      if (!result) throw new Error('Save returned null');
+      showToast('✓ Saved successfully');
+      els.saveBtn.classList.add('saved');
+      els.saveBtnText.textContent = '✓ Saved';
+      setTimeout(() => {
+        els.saveBtn.classList.remove('saved');
+        els.saveBtnText.textContent = 'Update Today\'s Entry';
+      }, 1800);
+      await loadHistory();
+    } catch (err) {
+      console.error('Save failed:', err);
+      showToast('Could not save. Try again.');
+    }
+  }
+
+  async function loadEntry(dateKey) {
+    try {
+      const result = await window.storage.get(`entry:${dateKey}`);
+      if (result && result.value) return JSON.parse(result.value);
+    } catch (err) {
+      // missing key or other error — return null
+    }
+    return null;
+  }
+
+  async function loadTodayIfAny() {
+    const data = await loadEntry(todayKey);
+    if (data) {
+      if (data.gpay) els.gpay.value = data.gpay;
+      if (data.cash) els.cash.value = data.cash;
+      if (data.expenses) els.expenses.value = data.expenses;
+      els.attendance.checked = !!data.attendance;
+      els.attendanceRow.classList.toggle('checked', !!data.attendance);
+      clearExtras();
+      if (Array.isArray(data.extras)) {
+        data.extras.forEach(e => addExtraRow(e.category, e.amount));
+      }
+      els.saveBtnText.textContent = 'Update Today\'s Entry';
+    }
+    recompute();
+  }
+
+  function drawWeeklyChart(entries) {
+    const svg = els.weeklyChart;
+    svg.innerHTML = '';
+    
+    // Get last 7 days of data
+    const sortedKeys = Object.keys(entries).sort().slice(-7);
+    if (sortedKeys.length < 2) {
+      els.chartSection.style.display = 'none';
+      return;
+    }
+
+    const data = sortedKeys.map(k => {
+      const [y, m, d] = k.split('-').map(Number);
+      const entry = entries[k];
+      const sales = (entry.gpay || 0) + (entry.cash || 0);
+      return { date: new Date(y, m - 1, d), sales, day: d, month: m - 1 };
+    });
+
+    // SVG dimensions
+    const width = 800, height = 300, padding = 40;
+    const chartW = width - 2 * padding;
+    const chartH = height - 2 * padding;
+
+    // Scale
+    const maxSales = Math.max(...data.map(d => d.sales), 1000);
+    const minSales = 0;
+    const scale = (val) => ((val - minSales) / (maxSales - minSales)) * chartH;
+    
+    // Grid lines and labels
+    const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    gridGroup.setAttribute('stroke', 'var(--line)');
+    
+    // Horizontal grid
+    for (let i = 0; i <= 5; i++) {
+      const y = padding + (chartH / 5) * i;
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', padding);
+      line.setAttribute('y1', y);
+      line.setAttribute('x2', width - padding);
+      line.setAttribute('y2', y);
+      line.setAttribute('stroke', '#E8DFC9');
+      line.setAttribute('stroke-dasharray', '2,2');
+      gridGroup.appendChild(line);
+
+      // Y-axis labels
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', padding - 10);
+      label.setAttribute('y', y + 4);
+      label.setAttribute('text-anchor', 'end');
+      label.setAttribute('font-size', '11');
+      label.setAttribute('fill', '#6B5544');
+      label.setAttribute('font-family', 'Fraunces, serif');
+      label.setAttribute('font-weight', '500');
+      label.textContent = '₹' + fmtMoney((maxSales / 5) * (5 - i));
+      gridGroup.appendChild(label);
+    }
+    svg.appendChild(gridGroup);
+
+    // Points and line
+    const points = data.map((d, i) => {
+      const x = padding + (i / (data.length - 1)) * chartW;
+      const y = height - padding - scale(d.sales);
+      return { x, y, ...d };
+    });
+
+    // Line
+    const pathData = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    line.setAttribute('d', pathData);
+    line.setAttribute('stroke', '#5A7A4F');
+    line.setAttribute('stroke-width', '3');
+    line.setAttribute('fill', 'none');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(line);
+
+    // Points
+    points.forEach((p, i) => {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', p.x);
+      circle.setAttribute('cy', p.y);
+      circle.setAttribute('r', '5');
+      circle.setAttribute('fill', '#5A7A4F');
+      circle.setAttribute('stroke', '#FAF5E9');
+      circle.setAttribute('stroke-width', '2');
+      svg.appendChild(circle);
+
+      // Day labels
+      const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      label.setAttribute('x', p.x);
+      label.setAttribute('y', height - padding + 22);
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('font-size', '12');
+      label.setAttribute('fill', '#6B5544');
+      label.setAttribute('font-weight', '500');
+      label.setAttribute('font-family', 'Plus Jakarta Sans, sans-serif');
+      const dayShort = DAYS[p.date.getDay()].substring(0, 3);
+      label.textContent = `${dayShort} ${p.day}`;
+      svg.appendChild(label);
+
+      // Tooltip on hover
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', p.x - 25);
+      rect.setAttribute('y', p.y - 40);
+      rect.setAttribute('width', '50');
+      rect.setAttribute('height', '30');
+      rect.setAttribute('fill', 'rgba(42, 31, 23, 0.9)');
+      rect.setAttribute('rx', '6');
+      rect.setAttribute('opacity', '0');
+      rect.style.cursor = 'pointer';
+      rect.style.pointerEvents = 'all';
+
+      const tooltipTxt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      tooltipTxt.setAttribute('x', p.x);
+      tooltipTxt.setAttribute('y', p.y - 18);
+      tooltipTxt.setAttribute('text-anchor', 'middle');
+      tooltipTxt.setAttribute('font-size', '11');
+      tooltipTxt.setAttribute('fill', '#FFFCF4');
+      tooltipTxt.setAttribute('font-weight', '600');
+      tooltipTxt.setAttribute('opacity', '0');
+      tooltipTxt.setAttribute('pointer-events', 'none');
+      tooltipTxt.textContent = '₹' + fmtMoney(p.sales);
+
+      rect.addEventListener('mouseenter', () => {
+        rect.setAttribute('opacity', '1');
+        tooltipTxt.setAttribute('opacity', '1');
+      });
+      rect.addEventListener('mouseleave', () => {
+        rect.setAttribute('opacity', '0');
+        tooltipTxt.setAttribute('opacity', '0');
+      });
+
+      svg.appendChild(rect);
+      svg.appendChild(tooltipTxt);
+    });
+
+    els.chartSection.style.display = 'block';
+  }
+
+  function updateMonthlyStats(items) {
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    let totalSales = 0, totalExpenses = 0, workingDays = 0;
+    let cashExpSum = 0, extrasSum = 0, wagesSum = 0;
+
+    items.filter(i => i.data).forEach(({ dateKey, data }) => {
+      const [y, m] = dateKey.split('-').map(Number);
+      if (y === currentYear && m === currentMonth + 1) {
+        const sales = (data.gpay || 0) + (data.cash || 0);
+        const extras = Array.isArray(data.extras) ? data.extras.reduce((s, e) => s + (e.amount || 0), 0) : 0;
+        const wages = data.attendance ? WAGE : 0;
+        
+        totalSales += sales;
+        totalExpenses += (data.expenses || 0) + wages + extras;
+        cashExpSum += (data.expenses || 0);
+        extrasSum += extras;
+        wagesSum += wages;
+        if (data.attendance) workingDays++;
+      }
+    });
+
+    const netProfit = totalSales - totalExpenses;
+    const monthName = MONTHS[currentMonth];
+
+    els.monthlyTitle.textContent = `${monthName} Sales & Expenses`;
+    els.monthlySales.textContent = fmtMoney(totalSales);
+    els.monthlyExpenses.textContent = fmtMoney(totalExpenses);
+    els.monthlyNet.textContent = fmtMoney(Math.abs(netProfit));
+    els.monthlySalesDays.textContent = `${items.filter(i => i.data && i.dateKey.split('-')[1] === String(currentMonth + 1).padStart(2, '0')).length} days recorded`;
+    els.monthlyDays.textContent = `${workingDays} working days`;
+
+    // Expense breakdown
+    const parts = [];
+    if (cashExpSum > 0) parts.push(`₹${fmtMoney(cashExpSum)} cash`);
+    if (extrasSum > 0) parts.push(`₹${fmtMoney(extrasSum)} other`);
+    if (wagesSum > 0) parts.push(`₹${fmtMoney(wagesSum)} wages`);
+    els.monthlyExpenseBreak.textContent = parts.length ? parts.join(' + ') : 'No expenses';
+
+    // Color net profit indicator
+    const netStatEl = els.monthlyNet.closest('.monthly-stat');
+    if (netProfit >= 0) {
+      netStatEl.style.color = 'var(--sage-deep)';
+      netStatEl.style.borderLeftColor = 'var(--sage-deep)';
+    } else {
+      netStatEl.style.color = 'var(--terracotta-deep)';
+      netStatEl.style.borderLeftColor = 'var(--terracotta-deep)';
+    }
+  }
+
+  async function loadHistory() {
+    let keys = [];
+    try {
+      const result = await window.storage.list('entry:');
+      if (result && result.keys) keys = result.keys;
+    } catch (err) {
+      console.error('List failed:', err);
+    }
+
+    keys.sort().reverse();
+
+    els.exportBtn.disabled = keys.length === 0;
+
+    if (keys.length === 0) {
+      els.historyList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">◌</div>No entries yet.<br>Today\'s entry will appear here once saved.</div>';
+      return;
+    }
+
+    const items = await Promise.all(keys.map(async k => {
+      const dateKey = k.replace('entry:', '');
+      const data = await loadEntry(dateKey);
+      return { dateKey, data };
+    }));
+
+    els.historyList.innerHTML = items
+      .filter(i => i.data)
+      .map(({ dateKey, data }) => {
+        const [y, m, d] = dateKey.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const sales = (data.gpay || 0) + (data.cash || 0);
+        const extrasSum = Array.isArray(data.extras) ? data.extras.reduce((s, e) => s + (e.amount || 0), 0) : 0;
+        const expenses = (data.expenses || 0) + (data.attendance ? WAGE : 0) + extrasSum;
+        const net = sales - expenses;
+        const isToday = dateKey === todayKey;
+
+        return `
+          <div class="history-item ${isToday ? 'is-today' : ''}" data-date="${dateKey}">
+            <div class="history-date">
+              <div class="day">${d}</div>
+              <div class="month">${MONTHS_SHORT[m - 1]}</div>
+            </div>
+            <div class="history-info">
+              <div class="day-label">${DAYS[dateObj.getDay()]}${isToday ? ' · Today' : ''}</div>
+              <div class="day-meta">
+                <span>↑ ₹${fmtMoney(sales)}</span>
+                <span>↓ ₹${fmtMoney(expenses)}</span>
+                <span>${data.attendance ? '✓ Present' : '○ Absent'}</span>
+              </div>
+            </div>
+            <div class="history-net ${net >= 0 ? 'positive' : 'negative'}">
+              ${net < 0 ? '−' : ''}₹${fmtMoney(Math.abs(net))}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    els.historyList.querySelectorAll('.history-item').forEach(item => {
+      item.addEventListener('click', async () => {
+        const dateKey = item.getAttribute('data-date');
+        const data = await loadEntry(dateKey);
+        if (!data) return;
+        showHistoryDetail(dateKey, data);
+      });
+    });
+
+    // Render weekly chart if we have at least 2 days
+    const entryMap = {};
+    for (const item of items.filter(i => i.data)) {
+      entryMap[item.dateKey] = item.data;
+    }
+    drawWeeklyChart(entryMap);
+    updateMonthlyStats(items);
+  }
+
+  function showHistoryDetail(dateKey, data) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    const dateStr = `${DAYS[dateObj.getDay()]}, ${d} ${MONTHS[m - 1]} ${y}`;
+    const isToday = dateKey === todayKey;
+
+    const sales = (data.gpay || 0) + (data.cash || 0);
+    const extrasArr = Array.isArray(data.extras) ? data.extras : [];
+    const extrasSum = extrasArr.reduce((s, e) => s + (e.amount || 0), 0);
+    const expenses = (data.expenses || 0) + (data.attendance ? WAGE : 0) + extrasSum;
+    const net = sales - expenses;
+
+    const extrasHtml = extrasArr.length
+      ? `<div style="margin-top:4px;padding:12px 14px;background:var(--cream);border-radius:10px;">
+           <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--coffee);font-weight:600;margin-bottom:8px;">Other Expenses</div>
+           ${extrasArr.map(e => `
+             <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:14px;">
+               <span style="color:var(--espresso);">${escapeHtml(e.category || 'Uncategorized')}</span>
+               <strong>₹${fmtMoney(e.amount || 0)}</strong>
+             </div>
+           `).join('')}
+         </div>`
+      : '';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal">
+        <div style="font-family:'Fraunces',serif;font-weight:600;font-size:24px;margin-bottom:4px;">${dateStr}</div>
+        <div style="font-size:11px;color:var(--coffee);margin-bottom:20px;text-transform:uppercase;letter-spacing:2px;">${isToday ? 'Today' : 'Past entry'}</div>
+
+        <div style="display:grid;gap:8px;margin-bottom:18px;">
+          <div class="modal-row"><span>Google Pay</span><strong>₹${fmtMoney(data.gpay || 0)}</strong></div>
+          <div class="modal-row"><span>Cash sales</span><strong>₹${fmtMoney(data.cash || 0)}</strong></div>
+          <div class="modal-row"><span>Cash expenses</span><strong>₹${fmtMoney(data.expenses || 0)}</strong></div>
+          <div class="modal-row"><span>Attendance</span><strong>${data.attendance ? 'Present (+₹500)' : 'Absent'}</strong></div>
+          ${extrasHtml}
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px;">
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--sage);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Sales</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;">₹${fmtMoney(sales)}</div>
+          </div>
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--terracotta);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Expenses</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;">₹${fmtMoney(expenses)}</div>
+          </div>
+          <div style="padding:11px;background:var(--cream);border-radius:10px;border-left:3px solid var(--espresso);">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--coffee);font-weight:600;margin-bottom:4px;">Net</div>
+            <div style="font-family:'Fraunces',serif;font-weight:600;font-size:15px;color:${net >= 0 ? 'var(--sage-deep)' : 'var(--terracotta-deep)'};">${net < 0 ? '−' : ''}₹${fmtMoney(Math.abs(net))}</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;">
+          <button id="closeModal" style="flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--line);background:var(--paper);font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;color:var(--espresso);">Close</button>
+          <button id="deleteEntry" style="flex:1;padding:13px;border-radius:11px;border:none;background:var(--terracotta);color:var(--paper);font-family:inherit;font-weight:600;font-size:14px;cursor:pointer;">Delete</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.remove();
+    });
+    overlay.querySelector('#closeModal').addEventListener('click', () => overlay.remove());
+    overlay.querySelector('#deleteEntry').addEventListener('click', async () => {
+      if (!confirm(`Delete entry for ${dateStr}?`)) return;
+      try {
+        await window.storage.delete(`entry:${dateKey}`);
+        overlay.remove();
+        showToast('Entry deleted');
+        if (isToday) {
+          els.gpay.value = '';
+          els.cash.value = '';
+          els.expenses.value = '';
+          els.attendance.checked = false;
+          els.attendanceRow.classList.remove('checked');
+          clearExtras();
+          els.saveBtnText.textContent = 'Save Today\'s Entry';
+          recompute();
+        }
+        await loadHistory();
+      } catch (err) {
+        console.error(err);
+        showToast('Could not delete');
+      }
+    });
+  }
+
+  // Wire events
+  els.gpay.addEventListener('input', recompute);
+  els.cash.addEventListener('input', recompute);
+  els.expenses.addEventListener('input', recompute);
+  els.attendance.addEventListener('change', () => {
+    els.attendanceRow.classList.toggle('checked', els.attendance.checked);
+    recompute();
+  });
+  els.saveBtn.addEventListener('click', saveEntry);
+  els.exportBtn.addEventListener('click', exportCSV);
+  els.addExtraBtn.addEventListener('click', () => {
+    const row = addExtraRow();
+    row.querySelector('.extra-cat').focus();
+  });
+
+  async function exportCSV() {
+    let keys = [];
+    try {
+      const result = await window.storage.list('entry:');
+      if (result && result.keys) keys = result.keys;
+    } catch (err) {
+      console.error('List failed:', err);
+    }
+
+    if (keys.length === 0) {
+      showToast('No entries to export');
+      return;
+    }
+
+    keys.sort();
+
+    const items = await Promise.all(keys.map(async k => {
+      const dateKey = k.replace('entry:', '');
+      const data = await loadEntry(dateKey);
+      return { dateKey, data };
+    }));
+
+    const headers = [
+      'Date', 'Day', 'Google Pay', 'Cash Sales', 'Total Sales',
+      'Cash Expenses', 'Other Expenses', 'Other Details',
+      'Attendance', 'Wages', 'Total Expenses', 'Net'
+    ];
+
+    const escape = v => {
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+
+    const rows = items
+      .filter(i => i.data)
+      .map(({ dateKey, data }) => {
+        const [y, m, d] = dateKey.split('-').map(Number);
+        const dateObj = new Date(y, m - 1, d);
+        const gpay = data.gpay || 0;
+        const cash = data.cash || 0;
+        const cashExp = data.expenses || 0;
+        const present = !!data.attendance;
+        const wages = present ? WAGE : 0;
+        const extrasArr = Array.isArray(data.extras) ? data.extras : [];
+        const extrasSum = extrasArr.reduce((s, e) => s + (e.amount || 0), 0);
+        const extrasDetail = extrasArr
+          .filter(e => e.category || e.amount > 0)
+          .map(e => `${e.category || 'Uncategorized'}: ${e.amount || 0}`)
+          .join('; ');
+        const sales = gpay + cash;
+        const totalExp = cashExp + wages + extrasSum;
+        const net = sales - totalExp;
+
+        return [
+          dateKey,
+          DAYS[dateObj.getDay()],
+          gpay, cash, sales,
+          cashExp, extrasSum, extrasDetail,
+          present ? 'Present' : 'Absent',
+          wages, totalExp, net
+        ].map(escape).join(',');
+      });
+
+    // Totals row
+    const totals = items.reduce((acc, { data }) => {
+      if (!data) return acc;
+      const gpay = data.gpay || 0;
+      const cash = data.cash || 0;
+      const cashExp = data.expenses || 0;
+      const wages = data.attendance ? WAGE : 0;
+      const extrasSum = Array.isArray(data.extras) ? data.extras.reduce((s, e) => s + (e.amount || 0), 0) : 0;
+      acc.gpay += gpay;
+      acc.cash += cash;
+      acc.sales += gpay + cash;
+      acc.cashExp += cashExp;
+      acc.extras += extrasSum;
+      acc.wages += wages;
+      acc.totalExp += cashExp + wages + extrasSum;
+      acc.net += (gpay + cash) - (cashExp + wages + extrasSum);
+      acc.presentDays += data.attendance ? 1 : 0;
+      return acc;
+    }, { gpay: 0, cash: 0, sales: 0, cashExp: 0, extras: 0, wages: 0, totalExp: 0, net: 0, presentDays: 0 });
+
+    const totalsRow = [
+      'TOTAL', '', totals.gpay, totals.cash, totals.sales,
+      totals.cashExp, totals.extras, '',
+      `${totals.presentDays} days`, totals.wages, totals.totalExp, totals.net
+    ].map(escape).join(',');
+
+    const csv = [headers.join(','), ...rows, '', totalsRow].join('\n');
+    // BOM for Excel UTF-8 compatibility
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const filename = `vs-eateries-${todayKey}.csv`;
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    showToast(`✓ Exported ${rows.length} entries`);
+  }
+
+  // Init
+  setupDate();
+  loadTodayIfAny();
+  loadHistory();
+</script>
+</body>
+</html>
