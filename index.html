@@ -769,7 +769,7 @@
   };
 
   const today = new Date();
-  const todayKey = formatDateKey(today);
+  const todayKey = 'vs_eateries_' + formatDateKey(today);
 
   function formatDateKey(d) {
     const y = d.getFullYear();
@@ -882,7 +882,7 @@
     };
 
     try {
-      const result = await window.storage.set(`entry:${todayKey}`, JSON.stringify(data));
+      const result = await window.storage.set(`vs_entry_${todayKey}`, JSON.stringify(data));
       if (!result) throw new Error('Save returned null');
       showToast('✓ Saved successfully');
       els.saveBtn.classList.add('saved');
@@ -900,7 +900,7 @@
 
   async function loadEntry(dateKey) {
     try {
-      const result = await window.storage.get(`entry:${dateKey}`);
+      const result = await window.storage.get(`vs_entry_${dateKey}`);
       if (result && result.value) return JSON.parse(result.value);
     } catch (err) {
       // missing key or other error — return null
@@ -1258,7 +1258,7 @@
     overlay.querySelector('#deleteEntry').addEventListener('click', async () => {
       if (!confirm(`Delete entry for ${dateStr}?`)) return;
       try {
-        await window.storage.delete(`entry:${dateKey}`);
+        await window.storage.delete(`vs_entry_${dateKey}`);
         overlay.remove();
         showToast('Entry deleted');
         if (isToday) {
